@@ -3,8 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MetricsController;
 
-Route::middleware('api')->prefix('api')->group(function () {
-
-    Route::get('/metrics/{resourceId}', [MetricsController::class, 'getMetrics']);
-
+Route::get('/metrics', function () {
+    return view('metrics');    // UI me grafikun
 });
+
+// API endpoint
+Route::get('/api/metrics', [MetricsController::class, 'getMetrics']);
