@@ -14,6 +14,11 @@ class ResourceEdit extends Component
 
     public function mount($id)
     {
+        // Ensure user is admin
+        if (session('user_role') !== 'admin') {
+            abort(403, 'Unauthorized. Admin access required.');
+        }
+        
         $resource = Resource::findOrFail($id);
 
         $this->resourceId = $resource->id;
@@ -21,9 +26,14 @@ class ResourceEdit extends Component
         $this->type = $resource->type;
         $this->status = $resource->status;
     }
-
+    
     public function save()
     {
+        // Ensure user is admin
+        if (session('user_role') !== 'admin') {
+            abort(403, 'Unauthorized. Admin access required.');
+        }
+        
         $resource = Resource::findOrFail($this->resourceId);
 
         $resource->update([

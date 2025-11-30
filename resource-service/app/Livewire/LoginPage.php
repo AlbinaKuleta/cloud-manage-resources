@@ -13,7 +13,9 @@ class LoginPage extends Component
 
     public function login()
     {
-        $response = Http::post('http://127.0.0.1:8000/api/login', [
+        $authServiceUrl = config('services.auth.url', 'http://127.0.0.1:8000');
+        
+        $response = Http::post("{$authServiceUrl}/api/login", [
             'email' => $this->email,
             'password' => $this->password,
         ]);
@@ -24,15 +26,44 @@ class LoginPage extends Component
         }
 
         $data = $response->json();
+        $user = $data['user'] ?? [];
 
-        session(['token' => $data['token']]);
-        session(['user' => $data['user']]);
+        // Store token and user info including role
+        session([
+            'token' => $data['token'],
+            'user' => $user,
+            'user_id' => $user['id'] ?? null,
+            'user_name' => $user['name'] ?? null,
+            'user_email' => $user['email'] ?? null,
+            'user_role' => $user['role'] ?? 'viewer',
+        ]);
 
-        return redirect('/resources');
+        // Log login activity
+        $this->logActivity('Login', 'Hyrje në sistem', request()->ip());
+
+        return redirect('/dashboard');
+    }
+
+    private function logActivity($action, $description, $ip = null)
+    {
+        $logs = session('user_activity_logs', []);
+        
+        // Add new log entry
+        array_unshift($logs, [
+            'action' => $action,
+            'description' => $description,
+            'time' => now()->toDateTimeString(), // Store as string for session
+            'ip' => $ip ?? request()->ip(),
+        ]);
+
+        // Keep only last 20 logs
+        $logs = array_slice($logs, 0, 20);
+
+        session(['user_activity_logs' => $logs]);
     }
 
     public function render()
     {
-        return view('livewire.login-page');
+        return view('livewire.login-page')->layout('components.layouts.auth');
     }
 }

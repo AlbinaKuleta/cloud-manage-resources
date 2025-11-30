@@ -48,8 +48,21 @@ class ResourceCreate extends Component
         return redirect('/resources');
     }
 
+    public function mount()
+    {
+        // Ensure user is admin
+        if (session('user_role') !== 'admin') {
+            abort(403, 'Unauthorized. Admin access required.');
+        }
+    }
+
     public function render()
     {
+        // Ensure user is admin
+        if (session('user_role') !== 'admin') {
+            abort(403, 'Unauthorized. Admin access required.');
+        }
+        
         return view('livewire.resource-create');
     }
 }

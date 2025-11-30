@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -14,25 +13,13 @@ return [
     |
     */
 
-    'postmark' => [
-        'key' => env('POSTMARK_API_KEY'),
+    'monitoring' => [
+        'url' => env('MONITORING_SERVICE_URL', 'http://127.0.0.1:8002'),
+        'timeout' => env('MONITORING_SERVICE_TIMEOUT', 5),
     ],
 
-    'resend' => [
-        'key' => env('RESEND_API_KEY'),
+    'auth' => [
+        'url' => env('AUTH_SERVICE_URL', 'http://127.0.0.1:8000'),
+        'timeout' => env('AUTH_SERVICE_TIMEOUT', 5),
     ],
-
-    'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
-        'secret' => env('AWS_SECRET_ACCESS_KEY'),
-        'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
-    ],
-
-    'slack' => [
-        'notifications' => [
-            'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
-            'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
-        ],
-    ],
-
 ];

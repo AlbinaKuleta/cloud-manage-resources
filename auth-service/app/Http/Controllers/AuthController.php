@@ -16,14 +16,14 @@ class AuthController extends Controller
             'name'     => ['required', 'string'],
             'email'    => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'min:6'],
-            'role'     => ['nullable', 'in:user,admin'],
+            'role'     => ['nullable', 'in:admin,operator,viewer'],
         ]);
 
         $user = User::create([
             'name'     => $data['name'],
             'email'    => $data['email'],
             'password' => Hash::make($data['password']),
-            'role'     => $data['role'] ?? 'user',
+            'role'     => $data['role'] ?? 'viewer',
         ]);
 
         $token = $user->createToken('api-token')->plainTextToken;
@@ -62,8 +62,16 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
+        $user = $request->user();
+        
         return response()->json([
-            'user' => $request->user(),
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role ?? 'viewer',
+                'created_at' => $user->created_at,
+            ],
         ]);
     }
 
