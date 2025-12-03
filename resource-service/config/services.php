@@ -15,7 +15,7 @@ return [
 
         'monitoring' => [
             'url' => env('MONITORING_SERVICE_URL', 'http://monitoring-service:8002'),
-            'timeout' => env('MONITORING_SERVICE_TIMEOUT', 5),
+            'timeout' => env('MONITORING_SERVICE_TIMEOUT', 10),
         ],
 
     'auth' => [

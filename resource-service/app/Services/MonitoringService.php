@@ -156,11 +156,15 @@ class MonitoringService
     public function isAvailable()
     {
         try {
-            $response = Http::timeout(2)
+            $response = Http::timeout($this->timeout)
                 ->get("{$this->baseUrl}/api/metrics");
 
             return $response->successful();
         } catch (\Exception $e) {
+            Log::warning('Monitoring Service: Nuk u arrit lidhja', [
+                'url' => $this->baseUrl,
+                'error' => $e->getMessage()
+            ]);
             return false;
         }
     }

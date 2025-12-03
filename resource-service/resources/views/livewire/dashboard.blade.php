@@ -279,7 +279,7 @@
                         <p class="mt-2 text-sm text-gray-500">Krijoni burime të reja për të filluar.</p>
                         @if($this->isAdmin())
                             <div class="mt-6">
-                                <a href="/resources/create" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <a href="/resources" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                     </svg>
@@ -339,7 +339,7 @@
                 </a>
 
                 @if($this->isAdmin())
-                <a href="/resources/create" class="relative group bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-300 hover:shadow-md transition-all">
+                <a href="/resources" class="relative group bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-300 hover:shadow-md transition-all">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="h-10 w-10 bg-purple-100 rounded-lg flex items-center justify-center">
