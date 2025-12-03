@@ -12,22 +12,22 @@ return [
 
     'services' => [
         'auth' => [
-            'url' => env('AUTH_SERVICE_URL', 'http://127.0.0.1:8003'),
+            'url' => env('AUTH_SERVICE_URL', 'http://auth-service:8000'),
             'timeout' => env('AUTH_SERVICE_TIMEOUT', 5),
             'prefix' => '/api/auth',
         ],
         'resource' => [
-            'url' => env('RESOURCE_SERVICE_URL', 'http://127.0.0.1:8001'),
+            'url' => env('RESOURCE_SERVICE_URL', 'http://resource-service:8001'),
             'timeout' => env('RESOURCE_SERVICE_TIMEOUT', 5),
             'prefix' => '/api/resources',
         ],
         'monitoring' => [
-            'url' => env('MONITORING_SERVICE_URL', 'http://127.0.0.1:8002'),
+            'url' => env('MONITORING_SERVICE_URL', 'http://monitoring-service:8002'),
             'timeout' => env('MONITORING_SERVICE_TIMEOUT', 5),
             'prefix' => '/api/monitoring',
         ],
         'autoscaler' => [
-            'url' => env('AUTOSCALER_SERVICE_URL', 'http://127.0.0.1:8004'),
+            'url' => env('AUTOSCALER_SERVICE_URL', 'http://autoscaler-service:8003'),
             'timeout' => env('AUTOSCALER_SERVICE_TIMEOUT', 5),
             'prefix' => '/api/autoscaler',
         ],
@@ -58,7 +58,7 @@ return [
     */
 
     'auth' => [
-        'service_url' => env('AUTH_SERVICE_URL', 'http://127.0.0.1:8003'),
+        'service_url' => env('AUTH_SERVICE_URL', 'http://auth-service:8000'),
         'timeout' => env('AUTH_SERVICE_TIMEOUT', 5),
         'cache_ttl' => env('AUTH_CACHE_TTL', 60), // Cache për 60 sekonda
     ],

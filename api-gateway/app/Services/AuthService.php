@@ -17,7 +17,7 @@ class AuthService
 
     public function __construct()
     {
-        $this->authServiceUrl = config('gateway.auth.service_url', 'http://127.0.0.1:8003');
+        $this->authServiceUrl = config('gateway.auth.service_url', 'http://auth-service:8000');
         $this->timeout = config('gateway.auth.timeout', 5);
         $this->cacheTtl = config('gateway.auth.cache_ttl', 60);
     }

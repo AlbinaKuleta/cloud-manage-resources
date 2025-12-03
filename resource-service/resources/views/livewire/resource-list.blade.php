@@ -87,7 +87,7 @@
                 <div class="flex items-center space-x-2">
                     <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Shfaq:</label>
                     <select wire:model="perPage" 
-                            class="px-4 py-2 text-sm font-medium border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm hover:border-gray-400 transition-colors">
+                            class="px-6 py-2 text-sm font-medium border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm hover:border-gray-400 transition-colors">
                         <option value="10">10 për faqe</option>
                         <option value="25">25 për faqe</option>
                         <option value="50">50 për faqe</option>

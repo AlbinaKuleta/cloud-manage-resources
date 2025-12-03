@@ -28,7 +28,10 @@ class Dashboard extends Component
 
     public function loadResources()
     {
-        $this->resources = Resource::all();
+        // Merr vetëm 2 burimet e fundit (të krijuara më së fundi)
+        $this->resources = Resource::orderBy('created_at', 'desc')
+            ->take(2)
+            ->get();
     }
 
     public function fetchLiveMetrics()

@@ -31,13 +31,35 @@ class RouteService
         $timeout = $serviceConfig['timeout'] ?? 5;
         $prefix = $serviceConfig['prefix'] ?? '';
 
-        // Merr path-in pas prefix-it
-        $path = $request->path();
-        $path = str_replace($prefix, '', $path);
-        $path = ltrim($path, '/');
+        // Merr path-in e plotë nga request (pa /api prefix nëse ekziston)
+        $requestPath = $request->path();
         
-        // Ndërto URL-në e plotë
-        $fullUrl = rtrim($serviceUrl, '/') . '/' . $path;
+        // Hiq /api nga fillimi nëse ekziston
+        if (str_starts_with($requestPath, 'api/')) {
+            $requestPath = substr($requestPath, 4);
+        }
+        $requestPath = ltrim($requestPath, '/');
+        
+        // Nëse path-i fillon me prefix të service-it, hiq atë
+        $prefixWithoutSlash = ltrim($prefix, '/');
+        if ($prefixWithoutSlash && str_starts_with($requestPath, $prefixWithoutSlash)) {
+            $path = substr($requestPath, strlen($prefixWithoutSlash));
+            $path = ltrim($path, '/');
+        } else {
+            // Nëse nuk ka prefix ose nuk përputhet, përdor path-in e plotë
+            $path = $requestPath;
+        }
+        
+        // Ndërto URL-në e plotë - shto prefix nëse service e kërkon
+        if ($prefix && !empty($path)) {
+            $fullUrl = rtrim($serviceUrl, '/') . '/' . ltrim($prefix, '/') . '/' . $path;
+        } elseif ($prefix) {
+            $fullUrl = rtrim($serviceUrl, '/') . '/' . ltrim($prefix, '/');
+        } elseif (!empty($path)) {
+            $fullUrl = rtrim($serviceUrl, '/') . '/' . $path;
+        } else {
+            $fullUrl = rtrim($serviceUrl, '/');
+        }
         
         // Shto query parameters nëse ka
         if ($request->query()) {
