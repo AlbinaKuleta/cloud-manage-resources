@@ -13,13 +13,13 @@ return [
     |
     */
 
-    'monitoring' => [
-        'url' => env('MONITORING_SERVICE_URL', 'http://127.0.0.1:8002'),
-        'timeout' => env('MONITORING_SERVICE_TIMEOUT', 5),
-    ],
+        'monitoring' => [
+            'url' => env('MONITORING_SERVICE_URL', 'http://monitoring-service:8002'),
+            'timeout' => env('MONITORING_SERVICE_TIMEOUT', 5),
+        ],
 
     'auth' => [
-        'url' => env('AUTH_SERVICE_URL', 'http://127.0.0.1:8000'),
+        'url' => env('AUTH_SERVICE_URL', 'http://auth-service:8000'),
         'timeout' => env('AUTH_SERVICE_TIMEOUT', 5),
     ],
 ];

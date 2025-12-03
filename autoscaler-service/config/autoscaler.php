@@ -11,13 +11,13 @@ return [
     */
 
     'monitoring' => [
-        'service_url' => env('MONITORING_SERVICE_URL', 'http://127.0.0.1:8002'),
+        'service_url' => env('MONITORING_SERVICE_URL', 'http://monitoring-service:8002'),
         'timeout' => env('MONITORING_SERVICE_TIMEOUT', 5),
         'interval' => env('MONITORING_INTERVAL', 30), // sekonda
     ],
 
     'resource' => [
-        'service_url' => env('RESOURCE_SERVICE_URL', 'http://127.0.0.1:8001'),
+        'service_url' => env('RESOURCE_SERVICE_URL', 'http://resource-service:8001'),
         'timeout' => env('RESOURCE_SERVICE_TIMEOUT', 5),
     ],
 

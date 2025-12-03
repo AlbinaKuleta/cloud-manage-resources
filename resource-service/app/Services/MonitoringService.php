@@ -20,7 +20,7 @@ class MonitoringService
 
     public function __construct()
     {
-        $this->baseUrl = config('services.monitoring.url', 'http://127.0.0.1:8002');
+        $this->baseUrl = config('services.monitoring.url', 'http://monitoring-service:8002');
         $this->timeout = config('services.monitoring.timeout', 5);
     }
 

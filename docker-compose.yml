@@ -1,0 +1,200 @@
+services:
+  # MySQL Database (shared)
+  mysql:
+    image: mysql:8.0
+    container_name: cloud-platform-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: cloud_platform
+      MYSQL_USER: cloud_user
+      MYSQL_PASSWORD: cloud_password
+    # Port mapping removed - services access MySQL via Docker network
+    # ports:
+    #   - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - cloud-platform-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: cloud-platform-auth
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_KEY=
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=cloud_platform
+      - DB_USERNAME=cloud_user
+      - DB_PASSWORD=cloud_password
+    volumes:
+      - ./auth-service:/var/www/html
+      - auth_storage:/var/www/html/storage
+    networks:
+      - cloud-platform-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: sh -c "sleep 5 && php artisan key:generate --force && php artisan config:clear && php artisan cache:clear && php artisan migrate --force && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"
+
+  # Resource Service
+  resource-service:
+    build:
+      context: ./resource-service
+      dockerfile: Dockerfile
+    container_name: cloud-platform-resource
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=cloud_platform
+      - DB_USERNAME=cloud_user
+      - DB_PASSWORD=cloud_password
+      - AUTH_SERVICE_URL=http://auth-service:8000
+      - MONITORING_SERVICE_URL=http://monitoring-service:8002
+    volumes:
+      - ./resource-service:/var/www/html
+      - resource_storage:/var/www/html/storage
+    networks:
+      - cloud-platform-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      monitoring-service:
+        condition: service_started
+    command: sh -c "sleep 5 && php artisan key:generate --force && php artisan config:clear && php artisan cache:clear && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8001"
+
+  # Monitoring Service
+  monitoring-service:
+    build:
+      context: ./monitoring-service
+      dockerfile: Dockerfile
+    container_name: cloud-platform-monitoring
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_KEY=
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=cloud_platform
+      - DB_USERNAME=cloud_user
+      - DB_PASSWORD=cloud_password
+    volumes:
+      - ./monitoring-service:/var/www/html
+      - monitoring_storage:/var/www/html/storage
+    networks:
+      - cloud-platform-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: sh -c "sleep 5 && php artisan key:generate --force && php artisan config:clear && php artisan cache:clear && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8002"
+
+  # Autoscaler Service
+  autoscaler-service:
+    build:
+      context: ./autoscaler-service
+      dockerfile: Dockerfile
+    container_name: cloud-platform-autoscaler
+    restart: unless-stopped
+    ports:
+      - "8003:8003"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_KEY=
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=cloud_platform
+      - DB_USERNAME=cloud_user
+      - DB_PASSWORD=cloud_password
+      - MONITORING_SERVICE_URL=http://monitoring-service:8002
+      - RESOURCE_SERVICE_URL=http://resource-service:8001
+      - AUTOSCALER_ENABLED=true
+    volumes:
+      - ./autoscaler-service:/var/www/html
+      - autoscaler_storage:/var/www/html/storage
+    networks:
+      - cloud-platform-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      monitoring-service:
+        condition: service_started
+      resource-service:
+        condition: service_started
+    command: sh -c "sleep 5 && php artisan key:generate --force && php artisan config:clear && php artisan cache:clear && php artisan migrate --force && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: cloud-platform-gateway
+    restart: unless-stopped
+    ports:
+      - "8004:8004"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_KEY=
+      - AUTH_SERVICE_URL=http://auth-service:8000
+      - RESOURCE_SERVICE_URL=http://resource-service:8001
+      - MONITORING_SERVICE_URL=http://monitoring-service:8002
+      - AUTOSCALER_SERVICE_URL=http://autoscaler-service:8003
+    volumes:
+      - ./api-gateway:/var/www/html
+      - gateway_storage:/var/www/html/storage
+    networks:
+      - cloud-platform-network
+    depends_on:
+      - auth-service
+      - resource-service
+      - monitoring-service
+      - autoscaler-service
+    command: sh -c "sleep 5 && php artisan key:generate --force && php artisan config:clear && php artisan cache:clear && php artisan serve --host=0.0.0.0 --port=8004"
+
+networks:
+  cloud-platform-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
+  auth_storage:
+    driver: local
+  resource_storage:
+    driver: local
+  monitoring_storage:
+    driver: local
+  autoscaler_storage:
+    driver: local
+  gateway_storage:
+    driver: local
+

@@ -41,21 +41,25 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (!Auth::attempt($credentials)) {
+        // Optimizim: Merr përdoruesin direkt dhe kontrollo password manualisht
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Invalid login credentials.'],
             ]);
         }
 
-        $user = $request->user();
-
-        // revoke previous tokens
-        $user->tokens()->delete();
-
+        // Krijo token direkt pa fshirë tokens të vjetra (për performance)
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
-            'user'  => $user,
+            'user'  => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role ?? 'viewer',
+            ],
             'token' => $token,
         ]);
     }

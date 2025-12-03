@@ -15,7 +15,7 @@ class LoginPage extends Component
     {
         $authServiceUrl = config('services.auth.url', 'http://127.0.0.1:8000');
         
-        $response = Http::post("{$authServiceUrl}/api/login", [
+        $response = Http::timeout(30)->post("{$authServiceUrl}/api/login", [
             'email' => $this->email,
             'password' => $this->password,
         ]);
